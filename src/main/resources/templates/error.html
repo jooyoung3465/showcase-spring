@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>오류 — 빅데이터소프트웨어과 SW 작품전</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<header class="site-header">
+    <div class="header-top">
+        <div class="container">
+            <span>한국폴리텍대학교 강서캠퍼스</span>
+        </div>
+    </div>
+    <div class="header-main">
+        <div class="container header-inner">
+            <a href="/" class="header-brand">
+                <p class="header-sub">빅데이터소프트웨어과</p>
+                <h1 class="header-title">SW 작품전</h1>
+                <p class="header-desc">학생 프로젝트 전시 아카이브</p>
+            </a>
+            <div class="header-meta">
+                <span>Software Exhibition</span>
+                <strong>2022-2026</strong>
+            </div>
+        </div>
+    </div>
+</header>
+
+<main class="container main-content" style="text-align:center; padding-top: 80px;">
+    <h2 style="font-size: 1.5rem; color: #1a1a2e; margin-bottom: 16px;">페이지를 찾을 수 없습니다</h2>
+    <p style="color: #666; margin-bottom: 32px;" th:text="${errorMessage}">오류가 발생했습니다.</p>
+    <a href="/" class="btn-primary" style="text-decoration:none; padding: 10px 28px;">← 메인으로 돌아가기</a>
+</main>
+
+</body>
+</html>

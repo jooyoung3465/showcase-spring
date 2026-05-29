@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${project.title} + ' — 빅데이터소프트웨어과 SW 작품전'">빅데이터소프트웨어과 SW 작품전</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<header class="site-header">
+    <div class="header-top">
+        <div class="container">
+            <span>한국폴리텍대학교 강서캠퍼스</span>
+        </div>
+    </div>
+    <div class="header-main">
+        <div class="container header-inner">
+            <a href="/" class="header-brand">
+                <div>
+                    <p class="header-sub">빅데이터소프트웨어과</p>
+                    <h1 class="header-title">SW 작품전</h1>
+                </div>
+            </a>
+            <div class="header-meta">
+                <span>Software Exhibition</span>
+                <strong>2022-2026</strong>
+            </div>
+        </div>
+    </div>
+</header>
+
+<main class="container main-content detail-content">
+
+    <a href="/" class="back-link">← 목록</a>
+
+    <!-- 영상 -->
+    <div class="video-wrap" th:if="${embedUrl != null}">
+        <iframe th:src="${embedUrl}"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen></iframe>
+    </div>
+
+    <!-- 프로젝트 정보 -->
+    <div class="detail-info">
+        <span class="field-tag" th:text="${project.field}"></span>
+        <h2 class="detail-title" th:text="${project.title}"></h2>
+
+        <div class="detail-meta">
+            <span class="team-name" th:text="${project.teamName}"></span>
+            <span class="members" th:text="${project.members}"></span>
+        </div>
+
+        <hr class="divider">
+
+        <p class="detail-desc" th:text="${project.description}"></p>
+
+        <!-- 기술스택 / 인프라 / 개발도구 -->
+        <th:block th:if="${(project.techStack != null and !project.techStack.isEmpty())
+                        or (project.infrastructure != null and !project.infrastructure.isEmpty())
+                        or (project.softwareTools != null and !project.softwareTools.isEmpty())}">
+            <hr class="divider">
+            <div class="tech-section">
+                <div class="tech-group" th:if="${project.techStack != null and !project.techStack.isEmpty()}">
+                    <p class="tech-label">기술스택</p>
+                    <div class="tech-tags">
+                        <span th:each="tag : ${#strings.arraySplit(project.techStack, ',')}"
+                              class="tech-tag" th:text="${#strings.trim(tag)}"></span>
+                    </div>
+                </div>
+                <div class="tech-group" th:if="${project.infrastructure != null and !project.infrastructure.isEmpty()}">
+                    <p class="tech-label">인프라</p>
+                    <div class="tech-tags">
+                        <span th:each="tag : ${#strings.arraySplit(project.infrastructure, ',')}"
+                              class="tech-tag tech-tag-infra" th:text="${#strings.trim(tag)}"></span>
+                    </div>
+                </div>
+                <div class="tech-group" th:if="${project.softwareTools != null and !project.softwareTools.isEmpty()}">
+                    <p class="tech-label">개발도구</p>
+                    <div class="tech-tags">
+                        <span th:each="tag : ${#strings.arraySplit(project.softwareTools, ',')}"
+                              class="tech-tag tech-tag-tool" th:text="${#strings.trim(tag)}"></span>
+                    </div>
+                </div>
+            </div>
+        </th:block>
+
+        <!-- 링크 버튼 -->
+        <div class="download-btns">
+            <a th:if="${project.githubUrl != null and !project.githubUrl.isEmpty()}"
+               th:href="${project.githubUrl}" target="_blank" class="btn-download btn-github">
+                ⌥ GitHub
+            </a>
+            <a th:if="${project.blogUrl != null and !project.blogUrl.isEmpty()}"
+               th:href="${project.blogUrl}" target="_blank" class="btn-download btn-blog">
+                ✎ 개발일지
+            </a>
+            <a th:if="${project.pdfUrl != null and !project.pdfUrl.isEmpty()}"
+               th:href="${project.pdfUrl}" target="_blank" class="btn-download">
+                ↓ 개요서 다운로드
+            </a>
+            <a th:if="${project.attachmentUrl != null and !project.attachmentUrl.isEmpty()}"
+               th:href="${project.attachmentUrl}" target="_blank" class="btn-download btn-download-sub">
+                ↓ 첨부파일 다운로드
+            </a>
+        </div>
+    </div>
+
+    <!-- 관련 프로젝트 -->
+    <div class="related-section" th:if="${!related.isEmpty()}">
+        <h3 class="related-title">같은 연도 프로젝트</h3>
+        <div class="project-grid">
+            <a th:each="p : ${related}"
+               th:href="@{/project/{id}(id=${p.id})}"
+               class="project-card">
+                <div class="card-thumb">
+                    <img th:if="${p.thumbnailUrl != null and !p.thumbnailUrl.isEmpty()}"
+                         th:src="${p.thumbnailUrl}" th:alt="${p.title}">
+                    <div th:unless="${p.thumbnailUrl != null and !p.thumbnailUrl.isEmpty()}"
+                         class="card-thumb-placeholder"></div>
+                </div>
+                <div class="card-info">
+                    <span class="field-tag" th:text="${p.field}"></span>
+                    <h3 class="card-title" th:text="${p.title}"></h3>
+                    <p class="card-team" th:text="${p.teamName}"></p>
+                </div>
+            </a>
+        </div>
+    </div>
+
+</main>
+
+</body>
+</html>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>관리자 — 빅데이터소프트웨어과 SW 작품전</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<header class="site-header">
+    <div class="header-top">
+        <div class="container">
+            <span>한국폴리텍대학교 강서캠퍼스</span>
+        </div>
+    </div>
+    <div class="header-main">
+        <div class="container header-inner">
+            <a href="/" class="header-brand">
+                <div>
+                    <p class="header-sub">빅데이터소프트웨어과</p>
+                    <h1 class="header-title">SW 작품전</h1>
+                </div>
+            </a>
+            <div class="header-meta">
+                <span>Software Exhibition</span>
+                <strong>2022-2026</strong>
+            </div>
+        </div>
+    </div>
+</header>
+
+<main class="container main-content">
+
+    <div class="admin-top">
+        <div>
+            <p class="admin-label">Admin</p>
+            <h2 class="admin-heading">프로젝트 관리</h2>
+        </div>
+        <div class="admin-actions">
+            <a href="/" class="link-muted">사이트 보기 →</a>
+            <a href="/manage-sc2026/new" class="btn-primary">+ 새 프로젝트</a>
+        </div>
+    </div>
+
+    <div class="admin-table-wrap">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>연도</th>
+                    <th>프로젝트명</th>
+                    <th>팀명</th>
+                    <th>분야</th>
+                    <th>영상</th>
+                    <th>PDF</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="p : ${projects}">
+                    <td class="text-muted" th:text="${p.year}"></td>
+                    <td class="text-bold" th:text="${p.title}"></td>
+                    <td class="text-muted" th:text="${p.teamName}"></td>
+                    <td><span class="field-tag" th:text="${p.field}"></span></td>
+                    <td>
+                        <span th:if="${p.youtubeUrl != null and !p.youtubeUrl.isEmpty()}" class="check-yes">✓</span>
+                        <span th:unless="${p.youtubeUrl != null and !p.youtubeUrl.isEmpty()}" class="check-no">—</span>
+                    </td>
+                    <td>
+                        <span th:if="${p.pdfUrl != null and !p.pdfUrl.isEmpty()}" class="check-yes">✓</span>
+                        <span th:unless="${p.pdfUrl != null and !p.pdfUrl.isEmpty()}" class="check-no">—</span>
+                    </td>
+                    <td class="table-actions">
+                        <a th:href="@{/manage-sc2026/{id}/edit(id=${p.id})}" class="link-edit">수정</a>
+                        <form th:action="@{/manage-sc2026/{id}/delete(id=${p.id})}" method="post"
+                              onsubmit="return confirm('정말 삭제하시겠습니까?')">
+                            <button type="submit" class="btn-delete">삭제</button>
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div th:if="${projects.isEmpty()}" class="empty-state">등록된 프로젝트가 없습니다.</div>
+    </div>
+    <p class="table-count" th:text="'총 ' + ${projects.size()} + '개'"></p>
+
+</main>
+
+</body>
+</html>

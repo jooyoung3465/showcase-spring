@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>프로젝트 등록/수정 — 빅데이터소프트웨어과 SW 작품전</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        .upload-area {
+            border: 2px dashed #d0d0d0;
+            border-radius: 8px;
+            padding: 20px 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.2s, background 0.2s;
+            background: #fafafa;
+            position: relative;
+        }
+        .upload-area:hover,
+        .upload-area.dragover {
+            border-color: #1a1a2e;
+            background: #f0f0f5;
+        }
+        .upload-area input[type="file"] {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+            width: 100%;
+            height: 100%;
+        }
+        .upload-icon { font-size: 1.5rem; margin-bottom: 6px; }
+        .upload-hint { font-size: 0.8rem; color: #888; margin-top: 4px; }
+        .upload-filename {
+            display: none;
+            margin-top: 8px;
+            font-size: 0.85rem;
+            color: #1a1a2e;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+
+<header class="site-header">
+    <div class="header-top">
+        <div class="container">
+            <span>한국폴리텍대학교 강서캠퍼스</span>
+        </div>
+    </div>
+    <div class="header-main">
+        <div class="container header-inner">
+            <a href="/" class="header-brand">
+                <div>
+                    <p class="header-sub">빅데이터소프트웨어과</p>
+                    <h1 class="header-title">SW 작품전</h1>
+                </div>
+            </a>
+            <div class="header-meta">
+                <span>Software Exhibition</span>
+                <strong>2022-2026</strong>
+            </div>
+        </div>
+    </div>
+</header>
+
+<main class="container main-content form-content">
+
+    <a href="/manage-sc2026" class="back-link">← 목록</a>
+    <h2 class="form-heading" th:text="${projectId != null} ? '프로젝트 수정' : '새 프로젝트 등록'"></h2>
+
+    <form th:action="${projectId != null} ? @{/manage-sc2026/{id}/edit(id=${projectId})} : @{/manage-sc2026/new}"
+          th:object="${project}"
+          method="post"
+          enctype="multipart/form-data"
+          class="project-form">
+
+        <!-- 연도 / 분야 -->
+        <div class="form-row">
+            <div class="form-field">
+                <label>연도</label>
+                <select th:field="*{year}">
+                    <option value="2026">2026</option>
+                    <option value="2025">2025</option>
+                    <option value="2024">2024</option>
+                    <option value="2023">2023</option>
+                    <option value="2022">2022</option>
+                </select>
+            </div>
+            <div class="form-field">
+                <label>분야</label>
+                <select th:field="*{field}">
+                    <option value="AI/ML">AI/ML</option>
+                    <option value="웹">웹</option>
+                    <option value="앱">앱</option>
+                    <option value="임베디드">임베디드</option>
+                    <option value="데이터">데이터</option>
+                    <option value="보안">보안</option>
+                    <option value="기타">기타</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- 프로젝트명 -->
+        <div class="form-field">
+            <label>프로젝트명</label>
+            <input type="text" th:field="*{title}" placeholder="프로젝트 이름을 입력하세요" required>
+        </div>
+
+        <!-- 팀명 / 팀원 -->
+        <div class="form-row">
+            <div class="form-field">
+                <label>팀명</label>
+                <input type="text" th:field="*{teamName}" placeholder="팀 이름" required>
+            </div>
+            <div class="form-field">
+                <label>팀원 (쉼표 구분)</label>
+                <input type="text" th:field="*{members}" placeholder="홍길동, 김철수">
+            </div>
+        </div>
+
+        <!-- 설명 -->
+        <div class="form-field">
+            <label>설명</label>
+            <textarea th:field="*{description}" rows="4" placeholder="프로젝트를 간단히 설명해주세요"></textarea>
+        </div>
+
+        <!-- YouTube -->
+        <div class="form-field">
+            <label>YouTube 시연영상 URL</label>
+            <input type="text" th:field="*{youtubeUrl}" placeholder="https://www.youtube.com/watch?v=...">
+            <p style="font-size:0.8rem; color:#888; margin-top:6px;">
+                ✓ 썸네일은 YouTube URL에서 자동으로 적용됩니다.
+            </p>
+        </div>
+
+        <!-- 기술스택 / 인프라 / 개발도구 -->
+        <div class="form-field">
+            <label>기술스택</label>
+            <input type="text" th:field="*{techStack}" placeholder="Spring Boot, React, MySQL, Redis (쉼표 구분)">
+        </div>
+        <div class="form-row">
+            <div class="form-field">
+                <label>인프라</label>
+                <input type="text" th:field="*{infrastructure}" placeholder="AWS EC2, Docker, Nginx">
+            </div>
+            <div class="form-field">
+                <label>개발도구 / 협업툴</label>
+                <input type="text" th:field="*{softwareTools}" placeholder="Git, Notion, Figma">
+            </div>
+        </div>
+
+        <!-- 링크 -->
+        <div class="form-row">
+            <div class="form-field">
+                <label>GitHub URL (선택)</label>
+                <input type="text" th:field="*{githubUrl}" placeholder="https://github.com/...">
+            </div>
+            <div class="form-field">
+                <label>블로그 / 개발일지 URL (선택)</label>
+                <input type="text" th:field="*{blogUrl}" placeholder="https://velog.io/... 또는 https://notion.so/...">
+            </div>
+        </div>
+
+        <!-- 개요서 PDF -->
+        <div class="form-field">
+            <label>개요서 PDF</label>
+
+            <!-- 기존 파일 유지용 hidden + 삭제 플래그 -->
+            <input type="hidden" th:field="*{pdfUrl}" id="pdfUrl">
+            <input type="hidden" name="deletePdf" id="delete-pdf-flag" value="false">
+
+            <!-- 현재 파일 표시 -->
+            <div id="current-pdf-wrap"
+                 th:if="${project.pdfUrl != null and !project.pdfUrl.isEmpty()}"
+                 style="display:flex; align-items:center; gap:10px; padding:10px 14px; background:#f5f5f5; border-radius:8px; margin-bottom:8px;">
+                <span>📄</span>
+                <a th:href="${project.pdfUrl}" target="_blank"
+                   style="font-size:0.85rem; color:#1a1a2e; text-decoration:underline; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"
+                   th:text="${project.pdfUrl.startsWith('/uploads/') ? project.pdfUrl.substring(9) : project.pdfUrl}">
+                </a>
+                <button type="button" onclick="removeFile('pdf')"
+                        style="padding:4px 10px; background:#fff; border:1px solid #dc2626; color:#dc2626; border-radius:6px; cursor:pointer; font-size:0.8rem; white-space:nowrap;">
+                    삭제
+                </button>
+            </div>
+
+            <div class="upload-area" id="drop-pdf">
+                <input type="file" name="pdfFile" accept=".pdf" id="file-pdf">
+                <div class="upload-icon">📄</div>
+                <div>파일을 끌어다 놓거나 클릭하여 선택</div>
+                <div class="upload-hint">PDF · 최대 50MB</div>
+                <div class="upload-filename" id="name-pdf"></div>
+            </div>
+        </div>
+
+        <!-- 첨부파일 -->
+        <div class="form-field">
+            <label>첨부파일 <span style="font-weight:400; color:#999;">(선택)</span></label>
+
+            <!-- 기존 파일 유지용 hidden + 삭제 플래그 -->
+            <input type="hidden" th:field="*{attachmentUrl}" id="attachmentUrl">
+            <input type="hidden" name="deleteAttach" id="delete-attach-flag" value="false">
+
+            <!-- 현재 파일 표시 -->
+            <div id="current-attach-wrap"
+                 th:if="${project.attachmentUrl != null and !project.attachmentUrl.isEmpty()}"
+                 style="display:flex; align-items:center; gap:10px; padding:10px 14px; background:#f5f5f5; border-radius:8px; margin-bottom:8px;">
+                <span>📎</span>
+                <a th:href="${project.attachmentUrl}" target="_blank"
+                   style="font-size:0.85rem; color:#1a1a2e; text-decoration:underline; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"
+                   th:text="${project.attachmentUrl.startsWith('/uploads/') ? project.attachmentUrl.substring(9) : project.attachmentUrl}">
+                </a>
+                <button type="button" onclick="removeFile('attach')"
+                        style="padding:4px 10px; background:#fff; border:1px solid #dc2626; color:#dc2626; border-radius:6px; cursor:pointer; font-size:0.8rem; white-space:nowrap;">
+                    삭제
+                </button>
+            </div>
+
+            <div class="upload-area" id="drop-attach">
+                <input type="file" name="attachFile" id="file-attach">
+                <div class="upload-icon">📎</div>
+                <div>파일을 끌어다 놓거나 클릭하여 선택</div>
+                <div class="upload-hint">모든 파일 형식 · 최대 50MB</div>
+                <div class="upload-filename" id="name-attach"></div>
+            </div>
+        </div>
+
+        <!-- 버튼 -->
+        <div class="form-buttons">
+            <a href="/manage-sc2026" class="btn-cancel">취소</a>
+            <button type="submit" class="btn-primary">저장하기</button>
+        </div>
+
+    </form>
+
+</main>
+
+<script>
+    // 파일 삭제 버튼 처리
+    function removeFile(type) {
+        if (!confirm('파일을 삭제하시겠습니까?')) return;
+
+        if (type === 'pdf') {
+            var wrap = document.getElementById('current-pdf-wrap');
+            var flag = document.getElementById('delete-pdf-flag');
+            var urlInput = document.getElementById('pdfUrl');
+            if (wrap) wrap.style.display = 'none';
+            if (flag) flag.value = 'true';
+            if (urlInput) urlInput.value = '';
+        } else if (type === 'attach') {
+            var wrap = document.getElementById('current-attach-wrap');
+            var flag = document.getElementById('delete-attach-flag');
+            var urlInput = document.getElementById('attachmentUrl');
+            if (wrap) wrap.style.display = 'none';
+            if (flag) flag.value = 'true';
+            if (urlInput) urlInput.value = '';
+        }
+    }
+
+    // 파일 선택 시 파일명 표시 + 드래그&드롭 스타일
+    var pairs = [
+        { input: 'file-pdf',    name: 'name-pdf',    drop: 'drop-pdf'    },
+        { input: 'file-attach', name: 'name-attach', drop: 'drop-attach' }
+    ];
+
+    pairs.forEach(function(p) {
+        var input = document.getElementById(p.input);
+        var nameEl = document.getElementById(p.name);
+        var dropEl = document.getElementById(p.drop);
+
+        input.addEventListener('change', function() {
+            if (input.files.length > 0) {
+                nameEl.textContent = '✓ ' + input.files[0].name;
+                nameEl.style.display = 'block';
+            }
+        });
+
+        dropEl.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            dropEl.classList.add('dragover');
+        });
+        dropEl.addEventListener('dragleave', function() {
+            dropEl.classList.remove('dragover');
+        });
+        dropEl.addEventListener('drop', function(e) {
+            e.preventDefault();
+            dropEl.classList.remove('dragover');
+            if (e.dataTransfer.files.length > 0) {
+                input.files = e.dataTransfer.files;
+                nameEl.textContent = '✓ ' + e.dataTransfer.files[0].name;
+                nameEl.style.display = 'block';
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

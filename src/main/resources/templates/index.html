@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>빅데이터소프트웨어과 SW 작품전 — 한국폴리텍대학교 강서캠퍼스</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<header class="site-header">
+    <div class="header-top">
+        <div class="container">
+            <span>한국폴리텍대학교 강서캠퍼스</span>
+        </div>
+    </div>
+    <div class="header-main">
+        <div class="container header-inner">
+            <a href="/" class="header-brand">
+                <div>
+                    <p class="header-sub">빅데이터소프트웨어과</p>
+                    <h1 class="header-title">SW 작품전</h1>
+                </div>
+            </a>
+            <div class="header-meta">
+                <span>Software Exhibition</span>
+                <strong>2022-2026</strong>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- 히어로 슬라이더 -->
+<section class="hero-slider" th:if="${sliderProjects != null and !sliderProjects.isEmpty()}" id="hero-slider">
+    <div class="slides-wrapper" id="slides-wrapper">
+        <div class="slide" th:each="p : ${sliderProjects}">
+            <div class="slide-bg" th:style="'background-image: url(' + ${p.thumbnailUrl} + ')'"></div>
+            <div class="slide-overlay"></div>
+            <div class="slide-content container">
+                <span class="field-tag" th:text="${p.field}"></span>
+                <h2 class="slide-title" th:text="${p.title}"></h2>
+                <p class="slide-team" th:text="${p.teamName}"></p>
+                <a th:href="@{/project/{id}(id=${p.id})}" class="slide-btn">자세히 보기 →</a>
+            </div>
+        </div>
+    </div>
+    <button class="slider-arrow slider-prev" onclick="slideMove(-1)">&#8249;</button>
+    <button class="slider-arrow slider-next" onclick="slideMove(1)">&#8250;</button>
+    <div class="slider-dots" id="slider-dots"></div>
+</section>
+
+<main class="container main-content">
+
+    <!-- 연도 탭 -->
+    <div class="tab-bar" th:if="${!years.isEmpty()}">
+        <a th:each="y : ${years}"
+           th:href="@{/(year=${y})}"
+           th:text="${y}"
+           th:classappend="${y == activeYear} ? 'active' : ''"
+           class="tab-item"></a>
+    </div>
+
+    <!-- 분야 필터 -->
+    <div class="filter-bar" th:if="${!years.isEmpty()}">
+        <a th:href="@{/(year=${activeYear})}"
+           th:classappend="${activeField == '전체'} ? 'active' : ''"
+           class="filter-pill">전체</a>
+        <th:block th:each="f : ${ {'AI/ML','웹','앱','임베디드','데이터','보안','기타'} }">
+            <a th:if="${allProjects != null and #lists.contains(allProjects.![field], f)}"
+               th:href="@{/(year=${activeYear}, field=${f})}"
+               th:text="${f}"
+               th:classappend="${activeField == f} ? 'active' : ''"
+               class="filter-pill"></a>
+        </th:block>
+    </div>
+
+    <!-- 프로젝트 그리드 -->
+    <div th:if="${projects.isEmpty()}" class="empty-state">
+        <p>등록된 프로젝트가 없습니다.</p>
+    </div>
+
+    <div class="project-grid" th:unless="${projects.isEmpty()}">
+        <a th:each="p : ${projects}"
+           th:href="@{/project/{id}(id=${p.id})}"
+           class="project-card">
+            <div class="card-thumb">
+                <img th:if="${p.thumbnailUrl != null and !p.thumbnailUrl.isEmpty()}"
+                     th:src="${p.thumbnailUrl}" th:alt="${p.title}">
+                <div th:unless="${p.thumbnailUrl != null and !p.thumbnailUrl.isEmpty()}"
+                     class="card-thumb-placeholder"></div>
+            </div>
+            <div class="card-info">
+                <span class="field-tag" th:text="${p.field}"></span>
+                <h3 class="card-title" th:text="${p.title}"></h3>
+                <p class="card-team" th:text="${p.teamName}"></p>
+            </div>
+        </a>
+    </div>
+
+    <!-- 페이지네이션 -->
+    <div class="pagination" th:if="${totalPages > 1}">
+        <!-- 이전 -->
+        <a th:if="${currentPage > 1}"
+           th:href="@{/(year=${activeYear}, field=${activeField != '전체' ? activeField : null}, page=${currentPage - 1})}"
+           class="page-btn page-arrow">&#8249;</a>
+        <span th:unless="${currentPage > 1}" class="page-btn page-arrow disabled">&#8249;</span>
+
+        <!-- 페이지 번호 -->
+        <th:block th:each="i : ${#numbers.sequence(1, totalPages)}">
+            <a th:href="@{/(year=${activeYear}, field=${activeField != '전체' ? activeField : null}, page=${i != 1 ? i : null})}"
+               th:text="${i}"
+               th:classappend="${i == currentPage} ? ' active' : ''"
+               class="page-btn"></a>
+        </th:block>
+
+        <!-- 다음 -->
+        <a th:if="${currentPage < totalPages}"
+           th:href="@{/(year=${activeYear}, field=${activeField != '전체' ? activeField : null}, page=${currentPage + 1})}"
+           class="page-btn page-arrow">&#8250;</a>
+        <span th:unless="${currentPage < totalPages}" class="page-btn page-arrow disabled">&#8250;</span>
+    </div>
+
+</main>
+
+<script>
+(function () {
+    var wrapper = document.getElementById('slides-wrapper');
+    if (!wrapper) return;
+    var slides = wrapper.querySelectorAll('.slide');
+    var dotsEl = document.getElementById('slider-dots');
+    var heroSlider = document.getElementById('hero-slider');
+    var total = slides.length;
+    var current = 0;
+    var timer;
+    if (total === 0) return;
+
+    for (var i = 0; i < total; i++) {
+        (function (idx) {
+            var dot = document.createElement('button');
+            dot.className = 'slider-dot' + (idx === 0 ? ' active' : '');
+            dot.addEventListener('click', function () { goTo(idx); });
+            dotsEl.appendChild(dot);
+        })(i);
+    }
+    slides[0].classList.add('active');
+
+    function goTo(index) {
+        var dots = dotsEl.querySelectorAll('.slider-dot');
+        slides[current].classList.remove('active');
+        dots[current].classList.remove('active');
+        current = (index + total) % total;
+        wrapper.style.transform = 'translateX(-' + (current * 100) + '%)';
+        slides[current].classList.add('active');
+        dots[current].classList.add('active');
+        clearInterval(timer);
+        timer = setInterval(function () { goTo(current + 1); }, 5000);
+    }
+
+    window.slideMove = function (dir) { goTo(current + dir); };
+    timer = setInterval(function () { goTo(current + 1); }, 5000);
+
+    /* 모바일 스와이프 */
+    var txStart = 0, tyStart = 0;
+    heroSlider.addEventListener('touchstart', function (e) {
+        txStart = e.changedTouches[0].clientX;
+        tyStart = e.changedTouches[0].clientY;
+    }, { passive: true });
+    heroSlider.addEventListener('touchend', function (e) {
+        var dx = e.changedTouches[0].clientX - txStart;
+        var dy = e.changedTouches[0].clientY - tyStart;
+        if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) {
+            goTo(dx < 0 ? current + 1 : current - 1);
+        }
+    }, { passive: true });
+})();
+</script>
+</body>
+</html>
